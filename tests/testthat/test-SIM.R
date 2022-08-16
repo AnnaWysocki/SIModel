@@ -32,7 +32,7 @@ BPop2 <- matrix(c(.3,.3,
 colnames(BPop2 ) <- c("X", "Y")
 rownames(BPop2 ) <- c("X_0", "Y_0")
 
-sampleCov2 <- GetSampleCov(BPop, c("X", "Y"))
+sampleCov2 <- GetSampleCov(BPop2, c("X", "Y"))
 
 effects2 <- data.frame(predictor = "X", outcome = "Y", name = "CLxy")
 stability2 <- data.frame(X = .3, Y = 0.33)
@@ -55,12 +55,12 @@ stability3 <- data.frame(X = .3, Y = 0.33, Z = .4)
 dat <- data.frame(Y = rnorm(500, 0, 1), X = rnorm(500, 0, 1), Z = rnorm(500, 0, 1))
 
 
-
 # tests
 test_that("Not specifying proper data inputs throws an error", {
 
   expect_error(SIM(S = sampleCov2, effects = effects2, stability = stability2))
   expect_error(SIM(n = 1000, effects = effects2, stability = stability2))
+  expect_error(SIM(S = sampleCov2, n = "one thousand", effects = effects2, stability = stability2))
 
 })
 
@@ -88,4 +88,36 @@ test_that("SIM function returns correct solution with 3 variables", {
   expect_equal(unclass(lavaanSolution3), BPop3)
 })
 
+test_that("SIM function returns correct solution even when effects object doesn't have column names", {
 
+  effectsNoname <- as.data.frame(cbind("X", "Y", "CLxy"))
+  ModelFit2 <- SIM(S = sampleCov2, n = 1000, effects = effectsNoname, stability = stability2)
+  lavaanSolution2 <- t(round(lavaan::inspect(ModelFit2, what = "std")$lambda, 1))
+  expect_equal(unclass(lavaanSolution2), BPop2)
+})
+
+test_that("SIM function returns correct solution even when effects object has different column names", {
+
+  ModelFit2 <- SIM(S = sampleCov2, n = 1000,
+                   effects = data.frame(predictor = "X", outcome = "Y", name = ".3"),
+                   stability = stability2)
+  lavaanSolution2 <- t(round(lavaan::inspect(ModelFit2, what = "std")$lambda, 1))
+  expect_equal(unclass(lavaanSolution2), BPop2)
+
+})
+
+test_that("SIM function allows effects to be constrained to a nonzero value", {
+
+  effectsDiffname <- data.frame(pred = "X", out = "Y", n = ".3")
+  ModelFit2 <- SIM(S = sampleCov2, n = 1000, effects = effectsDiffname, stability = stability2)
+  lavaanSolution2 <- t(round(lavaan::inspect(ModelFit2, what = "std")$lambda, 1))
+  expect_equal(unclass(lavaanSolution2), BPop2)
+})
+
+#test_that("SIM function works even if stability object isn't named",{
+#
+#  ModelFit2 <- SIM(S = sampleCov2, n = 1000, effects = effectsDiffname,
+#                   stability = as.data.frame(cbind(.3, .33)))
+#  lavaanSolution2 <- t(round(lavaan::inspect(ModelFit2, what = "std")$lambda, 1))
+#  expect_equal(unclass(lavaanSolution2), BPop2)
+# })
