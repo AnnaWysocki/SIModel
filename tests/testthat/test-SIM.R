@@ -91,7 +91,9 @@ test_that("SIM function returns correct solution with 3 variables", {
 test_that("SIM function returns correct solution even when effects object doesn't have column names", {
 
   effectsNoname <- as.data.frame(cbind("X", "Y", "CLxy"))
-  ModelFit2 <- SIM(S = sampleCov2, n = 1000, effects = effectsNoname, stability = stability2)
+  expect_warning(SIM(S = sampleCov2, n = 1000, effects = effectsNoname, stability = stability2))
+
+  ModelFit2 <- suppressWarnings(SIM(S = sampleCov2, n = 1000, effects = effectsNoname, stability = stability2))
   lavaanSolution2 <- t(round(lavaan::inspect(ModelFit2, what = "std")$lambda, 1))
   expect_equal(unclass(lavaanSolution2), BPop2)
 })
@@ -108,8 +110,18 @@ test_that("SIM function returns correct solution even when effects object has di
 
 test_that("SIM function allows effects to be constrained to a nonzero value", {
 
+  effectsNum <- data.frame(predictor = "X", outcome = "Y", name = ".3")
+  ModelFit2 <- SIM(S = sampleCov2, n = 1000, effects = effectsNum, stability = stability2)
+  lavaanSolution2 <- t(round(lavaan::inspect(ModelFit2, what = "std")$lambda, 1))
+  expect_equal(unclass(lavaanSolution2), BPop2)
+})
+
+test_that("SIM function will rename effects object columns if mislabeled and provide a warning", {
+
   effectsDiffname <- data.frame(pred = "X", out = "Y", n = ".3")
-  ModelFit2 <- SIM(S = sampleCov2, n = 1000, effects = effectsDiffname, stability = stability2)
+  expect_warning(SIM(S = sampleCov2, n = 1000, effects = effectsDiffname, stability = stability2))
+
+  ModelFit2 <-  suppressWarnings(SIM(S = sampleCov2, n = 1000, effects = effectsDiffname, stability = stability2))
   lavaanSolution2 <- t(round(lavaan::inspect(ModelFit2, what = "std")$lambda, 1))
   expect_equal(unclass(lavaanSolution2), BPop2)
 })

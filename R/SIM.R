@@ -107,7 +107,13 @@ SIM <- function(data = NULL, S = NULL, n = NULL,
 
   if( ncol(effects) != 3) stop("The `effects` object needs 3 columns: predictor, outcome, and name")
 
-  colnames(effects) <- c("predictor", "outcome", "name")
+  if(!setequal(colnames(effects), c("predictor", "outcome", "name"))){
+
+    colnames(effects) <- c("predictor", "outcome", "name")
+
+    warning("Column names for effects object were renamed.
+             Effect input should have the column names 'predictor', 'outcome', and 'name'.")
+  }
 
 
   # Create list of variables to use
