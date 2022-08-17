@@ -34,9 +34,6 @@ SIM <- function(data = NULL, S = NULL, n = NULL,
 
   # To dos...
   #############################
-  # want to be able to set non-estimated parameters to something other than 0
-  # want to add the ability to run a sensitivity check by having multiple
-  # potential stabilities
   # Check if number of parameters specified to estimate fits with df
   # Allow residuals to correlate
 
@@ -138,7 +135,20 @@ SIM <- function(data = NULL, S = NULL, n = NULL,
 
   }
 
+  ################################
+  ##  Check Degrees of Freedom  ##
+  ################################
+
   p <- length(use)
+  df <- (p * (p-1)) /2
+
+  q <- suppressWarnings(sum(is.na(as.numeric(effects$name))))
+
+  if (q > df ) stop("The number of specified parameters to estimate are greater than the degrees of freedom.")
+
+  #################
+  ##  Run Model  ##
+  #################
 
   effects$predictor <- paste0(effects$predictor, "_0")
 

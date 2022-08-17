@@ -126,6 +126,13 @@ test_that("SIM function will rename effects object columns if mislabeled and pro
   expect_equal(unclass(lavaanSolution2), BPop2)
 })
 
+test_that("If the number of estimated parameters exceeds degrees of freedom, function will produce an error ", {
+
+  tooManyEffects <-  data.frame(predictor = c("X", "Y"), outcome = c("Y", "X"), name = c("CLxy", "CLyx"))
+  expect_error(SIM(S = sampleCov2, n = 1000, effects = tooManyEffects, stability = stability2))
+
+})
+
 #test_that("SIM function works even if stability object isn't named",{
 #
 #  ModelFit2 <- SIM(S = sampleCov2, n = 1000, effects = effectsDiffname,
