@@ -142,31 +142,40 @@ SIM <- function(data = NULL, S = NULL, n = NULL,
 
   effects$predictor <- paste0(effects$predictor, "_0")
 
-
-
-  ################################################
-  ##         Create a character matrix          ##
-  ##  that specifies which effects to estimate  ##
-  ##          and which to constrain            ##
-  ################################################
+  ModelResults <- list()
 
   blueprint <- CreateBlueprint(effects, use)
 
-  ArEquations <- GetModelImpEquations(S, blueprint, stability)
+  for(i in 1: nrow(stability)){
+
+  stabilityIndex <- stability[i, ]
+
+  ArEquations <- GetModelImpEquations(S, blueprint, stabilityIndex)
 
   LavaanSyntax <- GetLavaanEquations(blueprint, S)
   LavaanSyntax <- c(LavaanSyntax, ArEquations)
 
+  if( nrow(stability) == 1 ){
 
-  modelFit <- lavaan::sem(LavaanSyntax, sample.cov = S, sample.nobs= n,
+    ModelResults <- lavaan::sem(LavaanSyntax, sample.cov = S, sample.nobs= n,
+                                std.lv = TRUE)
+
+  } else {
+
+  ModelResults[[i]] <- lavaan::sem(LavaanSyntax, sample.cov = S, sample.nobs= n,
                           std.lv = TRUE)
+  }
+
+  }
 
   # Things to return in object, Lavaan syntax, Lavaan object,
   #                             results df, plot, any lavaan warnings...
 
 
 
-  return(modelFit)
+
+
+  return(ModelResults)
 
 
 }
