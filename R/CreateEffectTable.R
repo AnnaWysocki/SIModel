@@ -24,7 +24,7 @@ CreateEffectTable <- function(model){
   FullEffectTable <- lavaan::lavaanify(model)
   ClEffectTable <- FullEffectTable[which(FullEffectTable$op == "~"), ]
 
-  effects <- data.frame(predictor = 0, outcome = 0, name = 0)
+  effects <- data.frame(predictor = 0, outcome = 0, name = 0, estimate = 0)
 
 
   for(i in 1:nrow(ClEffectTable)){
@@ -42,9 +42,13 @@ CreateEffectTable <- function(model){
         effects[i, "name"] <- ClEffectTable[i, "label"]
       }
 
+      effects[i, "estimate"] <- "Yes"
+
     }else{
 
       effects[i, "name"] <- ClEffectTable[i, "ustart"]
+
+      effects[i, "estimate"] <- "No"
     }
   } # for loop ends
 
