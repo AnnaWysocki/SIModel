@@ -102,7 +102,7 @@ SIM <- function(data = NULL, S = NULL, n = NULL,
   p <- length(use)
   df <- (p * (p-1)) /2
 
-  q <- suppressWarnings(sum(is.na(as.numeric(effects$name))))
+  q <- sum(effects$estimate == "Yes")
 
   if (q > df ) stop("The number of specified parameters to estimate are greater than the degrees of freedom.")
 
@@ -116,6 +116,8 @@ SIM <- function(data = NULL, S = NULL, n = NULL,
 
   blueprint <- CreateBlueprint(effects, use)
 
+  modelWarning <- rep(0, nrow(stability))
+
   for(i in 1: nrow(stability)){
 
   stabilityIndex <- stability[i, ]
@@ -125,16 +127,11 @@ SIM <- function(data = NULL, S = NULL, n = NULL,
   LavaanSyntax <- GetLavaanEquations(blueprint, S)
   LavaanSyntax <- c(LavaanSyntax, ArEquations)
 
-  if( nrow(stability) == 1 ){
 
-    ModelResults <- lavaan::sem(LavaanSyntax, sample.cov = S, sample.nobs= n,
-                                std.lv = TRUE)
+  ModelResults[[i]] <- try(lavaan::sem(LavaanSyntax, sample.cov = S, sample.nobs= n,
+                          std.lv = TRUE), silent = TRUE)
 
-  } else {
-
-  ModelResults[[i]] <- lavaan::sem(LavaanSyntax, sample.cov = S, sample.nobs= n,
-                          std.lv = TRUE)
-  }
+  modelWarning[i] <- lavaan::inspect( ModelResults[[i]], what = "post.check")
 
   }
 
