@@ -4,7 +4,7 @@
 \alias{SIM}
 \title{Estimate a Stability Informed Model}
 \usage{
-SIM(data = NULL, S = NULL, n = NULL, effects, stability)
+SIM(data = NULL, S = NULL, n = NULL, model, stability)
 }
 \arguments{
 \item{data}{A dataframe with the measured variables. Not needed if S is provided}
@@ -13,15 +13,7 @@ SIM(data = NULL, S = NULL, n = NULL, effects, stability)
 
 \item{n}{Number of observations. Not needed if data is provided.}
 
-\item{effects}{A data frame that contains information on which effects to
-estimate or constrain to a value other than zero. Each row
-represents one effect. The \code{effects} object  must have three
-columns: column 1 has the variable names for the predictors,
-column 2 has the variable names for the outcomes, and column
-3 has the names of the effects (if the effect should be estimated)
-or the numeric value the effect should be set at (if the effect
-is not to be estimated but rather to be set to a value other
-than zero).}
+\item{model}{An object with the cross-sectional model description in lavaan syntax}
 
 \item{stability}{A data frame that contains stability information for each
 variable in the model. If unnamed SIM will assume the stability
@@ -36,9 +28,9 @@ Estimate a Stability Informed Model
 }
 \examples{
 
-effects <- data.frame(predictor = "X", outcome = "Y", name = "CLxy")
+model <- 'Y~X'
 stability <- data.frame(X = .3, Y = .3)
 dat <- data.frame(Y = rnorm(500, 0, 1), X = rnorm(500, 0, 1), Z = rnorm(500, 0, 1))
 
-SIM(data = dat, effects = effects, stability = stability)
+SIM(data = dat, model = model, stability = stability)
 }
