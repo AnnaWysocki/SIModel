@@ -11,3 +11,4 @@ print.SIModel <- function(out, digits = 2){
   print(printMatrix)
 
 }
+
