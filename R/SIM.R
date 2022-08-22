@@ -135,14 +135,19 @@ SIM <- function(data = NULL, S = NULL, n = NULL,
 
   }
 
-  # Things to return in object, Lavaan syntax, Lavaan object,
-  #                             results df, plot, any lavaan warnings...
+  ResultMatrix <- CreateResultMatrix(ModelResults, effects, stability)
+
+  out <- list(lavaanObjects = ModelResults,
+              ResultMatrix = ResultMatrix,
+              NoWarnings = as.logical(modelWarning))
 
 
+  class(out) = "SIModel"
+
+  print(out)
 
 
-
-  return(ModelResults)
+  return(out)
 
 
 }

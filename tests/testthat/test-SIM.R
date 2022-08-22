@@ -73,7 +73,7 @@ test_that("Not specifying proper data inputs throws an error", {
 test_that("SIM function returns correct solution with 2 variables", {
 
   ModelFit2 <- SIM(S = sampleCov2, n = 1000, model = model2, stability = stability2)
-  lavaanSolution2 <- t(round(lavaan::inspect(ModelFit2[[1]], what = "std")$lambda, 1))
+  lavaanSolution2 <- t(round(lavaan::inspect(ModelFit2$lavaanObjects[[1]], what = "std")$lambda, 1))
   expect_equal(unclass(lavaanSolution2), BPop2)
 })
 
@@ -81,7 +81,7 @@ test_that("SIM function returns correct solution with 2 variables", {
 test_that("SIM function returns correct solution with 2 variables", {
 
   ModelFit2 <- SIM(S = sampleCov2, n = 1000, model = model2, stability = stability2)
-  lavaanSolution2 <- t(round(lavaan::inspect(ModelFit2[[1]], what = "std")$lambda, 1))
+  lavaanSolution2 <- t(round(lavaan::inspect(ModelFit2$lavaanObjects[[1]], what = "std")$lambda, 1))
   expect_equal(unclass(lavaanSolution2), BPop2)
 })
 
@@ -89,7 +89,7 @@ test_that("SIM function returns correct solution with 2 variables", {
 test_that("SIM function returns correct solution with 3 variables", {
 
   ModelFit3 <- SIM(S = sampleCov3, n = 1000, model = model3, stability = stability3)
-  lavaanSolution3 <- t(round(lavaan::inspect(ModelFit3[[1]], what = "std")$lambda, 1))
+  lavaanSolution3 <- t(round(lavaan::inspect(ModelFit3$lavaanObjects[[1]], what = "std")$lambda, 1))
   expect_equal(unclass(lavaanSolution3), BPop3)
 })
 
