@@ -24,11 +24,6 @@
 SIM <- function(data = NULL, S = NULL, n = NULL,
                     model, stability){
 
-  # To dos...
-  #############################
-  # Allow residuals to correlate
-
-
   ####################
   ##  Check inputs  ##
   ####################
@@ -67,15 +62,25 @@ SIM <- function(data = NULL, S = NULL, n = NULL,
 
   }
 
-  # Checks for model input
-  stopifnot("`model` must be a character element " = is.character(model))
+  modelList <- list(model = model,
+                    S = S,
+                    n = n,
+                    stability = stability,
+                    modelsEstimated = nrow(stability))
 
-  effects <- CreateEffectTable(model)
+  # Checks for model input
+  stopifnot("`model` must be a character element " = is.character(modelList$model))
+
+  modelList <- c(modelList, CreateEffectTable(modelList$model))
+
+  effects <- modelList$CLEffectTable
 
 
   # Create list of variables to use
   use <- unique(c(effects$predictor, effects$outcome))
   use <- use[order(match(use, colnames(S)))]
+
+  modelList$p <- length(use)
 
   if( any(is.na(match(use, colnames(S)))) == TRUE ) {
 
@@ -102,52 +107,70 @@ SIM <- function(data = NULL, S = NULL, n = NULL,
   p <- length(use)
   df <- (p * (p-1)) /2
 
-  q <- sum(effects$estimate == "Yes")
+  modelList$q <- sum(effects$estimate == "Yes", nrow(modelList$ResidualCovariance$Variables))
 
-  if (q > df ) stop("The number of specified parameters to estimate are greater than the degrees of freedom.")
+  if (modelList$q > df ) stop("The number of specified parameters to estimate are greater than the degrees of freedom.")
 
   #################
   ##  Run Model  ##
   #################
 
-  effects$predictor <- paste0(effects$predictor, "_0")
+  modelList$CLEffectTable$predictor <- paste0(modelList$CLEffectTable$predictor, "_0")
 
   ModelResults <- list()
 
-  blueprint <- CreateBlueprint(effects, use)
+  modelList$blueprint <- CreateBlueprint(modelList$CLEffectTable, use)
 
-  modelWarning <- rep(0, nrow(stability))
+  modelList$modelWarning <- rep(0, nrow(modelList$stability))
 
-  for(i in 1: nrow(stability)){
+  for(i in 1: nrow(modelList$stability)){
 
-  stabilityIndex <- stability[i, ]
+  stabilityIndex <- modelList$stability[i, ]
 
-  ArEquations <- GetModelImpEquations(S, blueprint, stabilityIndex)
+  modelList <- c(modelList,
+                   GetModelImpEquations(S = S,
+                                      blueprint = modelList$blueprint,
+                                      stability = stabilityIndex,
+                                      residualcov = modelList$ResidualCovariance))
 
-  LavaanSyntax <- GetLavaanEquations(blueprint, S)
-  LavaanSyntax <- c(LavaanSyntax, ArEquations)
+  LavaanSyntax <- GetLavaanEquations(blueprint = modelList$blueprint,
+                                     S = S)
 
+  if( !is.null(modelList$ResidualCovariance$Syntax) ){
 
-  ModelResults[[i]] <- try(lavaan::sem(LavaanSyntax, sample.cov = S, sample.nobs= n,
-                          std.lv = TRUE), silent = TRUE)
-
-  modelWarning[i] <- lavaan::inspect( ModelResults[[i]], what = "post.check")
+    LavaanSyntax <- c(LavaanSyntax, modelList$ResidualCovariance$Syntax)
 
   }
 
-  ResultMatrix <- CreateResultMatrix(ModelResults, effects, stability)
+  modelList$SIMSyntax <- c(LavaanSyntax, modelList$modelImpliedEquations)
 
-  out <- list(lavaanObjects = ModelResults,
+
+  ModelResults[[i]] <- try(lavaan::sem(modelList$SIMSyntax, sample.cov = S, sample.nobs= n,
+                          std.lv = TRUE), silent = TRUE)
+
+  modelList$modelWarning[i] <- lavaan::inspect( ModelResults[[i]], what = "post.check")
+
+  }
+
+  modelList$lavaanObjects <- ModelResults
+
+  ResultMatrix <- CreateResultMatrix(modelList)
+
+  out <- list(stability = modelList$stability,
+              CLEffectTable = modelList$CLEffectTable,
               ResultMatrix = ResultMatrix,
-              NoWarnings = as.logical(modelWarning))
+              lavaanObjects = modelList$lavaanObjects,
+              NoWarnings = as.logical(modelList$modelWarning),
+              CSModelSyntax = modelList$model,
+              SIMSyntax = modelList$SIMSyntax,
+              modelImpliedEquations = modelList$modelImpliedEquations,
+              SymbolicMatrices = modelList$SymbolicMatrices)
 
 
   class(out) = "SIModel"
 
   print(out)
 
-
   return(out)
-
 
 }

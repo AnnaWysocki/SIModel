@@ -4,14 +4,18 @@
 \alias{GetSymbCovMatrix}
 \title{Create a symbolic covariance matrix}
 \usage{
-GetSymbCovMatrix(blueprint)
+GetSymbCovMatrix(blueprint, residualcov)
 }
 \arguments{
 \item{blueprint}{A character matrix which specifies which effects to estimate and
 which effects to constrain to a non-zero value}
+
+\item{residualcov}{A list with both the lavaan syntax for the residual covariance
+and a dataframe with the variable names}
 }
 \value{
-A character matrix
+A list of character matrices: A symbolic covariance matrix and a symbolic
+psi matrix
 }
 \description{
 Create a symbolic covariance matrix
@@ -20,5 +24,7 @@ Create a symbolic covariance matrix
 blueprint <- matrix( c("ARx", "CLxy", "ARy", "0"), nrow = 2, ncol = 2 )
 colnames(blueprint) <- c("X", "Y")
 rownames(blueprint) <- c("X_0", "Y_0")
-GetSymbCovMatrix(blueprint)
+ residualcov <- list(Syntax = 'X ~~ RCovXY * Y',
+                     Variables = data.frame(V1 = "X", V2 = "Y", Name = "RCovXY"))
+GetSymbCovMatrix(blueprint, residualcov)
 }

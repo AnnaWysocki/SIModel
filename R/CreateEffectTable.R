@@ -22,10 +22,9 @@
 CreateEffectTable <- function(model){
 
   FullEffectTable <- lavaan::lavaanify(model)
-  ClEffectTable <- FullEffectTable[which(FullEffectTable$op == "~"), ]
+  ClEffectTable <- FullEffectTable[FullEffectTable$op ==  "~", ]
 
   effects <- data.frame(predictor = 0, outcome = 0, name = 0, estimate = 0)
-
 
   for(i in 1:nrow(ClEffectTable)){
 
@@ -52,5 +51,36 @@ CreateEffectTable <- function(model){
     }
   } # for loop ends
 
-  return(effects)
+
+  ResidualCovariance <- FullEffectTable[FullEffectTable$op == "~~" &
+                                        FullEffectTable$lhs != FullEffectTable$rhs,]
+
+  ResidualCovarianceSyntax <- rep(0, nrow(ResidualCovariance))
+  ResidualCovarianceDF <- data.frame(V1 = rep(0, nrow(ResidualCovariance)),
+                                     V2 = rep(0, nrow(ResidualCovariance)),
+                                     name = rep(0, nrow(ResidualCovariance)))
+
+  if(nrow(ResidualCovariance) != 0){
+
+    for(i in 1: nrow(ResidualCovariance)){
+
+      CovLabel <- paste0("RCov", ResidualCovariance$lhs[i], ResidualCovariance$rhs[i])
+
+      ResidualCovarianceSyntax[i] <- paste0(ResidualCovariance$lhs[i], "~~", CovLabel, "*", ResidualCovariance$rhs[i])
+      ResidualCovarianceDF[i, ] <- c(ResidualCovariance$lhs[i], ResidualCovariance$rhs[i], CovLabel)
+
+    }
+
+  }else{
+
+    ResidualCovarianceSyntax <- NULL
+    ResidualCovarianceDF <- NULL
+
+  }
+
+  ResidualCovariance <- list(Syntax = ResidualCovarianceSyntax,
+                             Variables = ResidualCovarianceDF )
+
+
+  return(list(CLEffectTable = effects, ResidualCovariance = ResidualCovariance))
 }

@@ -8,8 +8,11 @@
 #'                  variable in the model. If unnamed SIM will assume the stability
 #'                  values are in the same order as the provided data set/
 #'                  covariance matrix.
+#' @param residualcov A list with both the lavaan syntax for the residual covariance
+#'                    and a dataframe with the variable names
 #'
-#' @return A character vector
+#' @return A character vector with the model implied equations for the autoregressive
+#'         effects and the phantom covariances.
 #' @export
 #'
 #' @examples
@@ -23,16 +26,22 @@
 #'
 #'  stability <- data.frame(X = .3, Y = .3)
 #'
-#'  GetModelImpEquations(S, blueprint, stability)
+#'  residualcov <- list(Syntax = 'X ~~ RCovXY * Y',
+#'                      Variables = data.frame(V1 = "X", V2 = "Y", Name = "RCovXY"))
 #'
-GetModelImpEquations <- function(S, blueprint, stability){
+#'  GetModelImpEquations(S, blueprint, stability, residualcov)
+#'
+GetModelImpEquations <- function(S, blueprint, stability, residualcov){
 
-  SymbolicCovMat <- GetSymbCovMatrix(blueprint)
+  SymbolicMats <- GetSymbCovMatrix(blueprint, residualcov)
 
+  SymbolicCovMat <- SymbolicMats$SymbCov
 
+  Psi <- Ryacas::ysym(SymbolicMats$Psi)
   B <- Ryacas::ysym(blueprint)
   Cov1 <- Ryacas::ysym(SymbolicCovMat)
   Cov2 <- SymbMultiplication(t(B), Cov1)
+
 
 
   StNames <- apply(as.matrix(colnames(blueprint)), 1, function(x){paste0("Cov", x, "0", x, "1")})
@@ -54,7 +63,7 @@ GetModelImpEquations <- function(S, blueprint, stability){
 
   # Covariance Equations
 
-  Cov3 <- SymbMultiplication(Cov2, B)
+  Cov3 <- SymbMultiplication(Cov2, B) + Psi
 
   Covariances <- SymbolicCovMat[upper.tri(SymbolicCovMat)]
 
@@ -66,5 +75,5 @@ GetModelImpEquations <- function(S, blueprint, stability){
 
   }
 
-  return(ArEquations)
+  return(list(modelImpliedEquations = ArEquations, SymbolicMatrices = SymbolicMats))
 }

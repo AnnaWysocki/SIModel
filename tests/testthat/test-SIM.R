@@ -37,7 +37,7 @@ sampleCov2 <- GetSampleCov(BPop2, c("X", "Y"))
 #effects2 <- CreateEffectTable('Y ~ X')
 
 model2 <-  'Y ~ X'
-stability2 <- data.frame(X = .3, Y = 0.33)
+stability <- data.frame(X = .3, Y = 0.33)
 
 BPop3 <- matrix(c(.3,.3, .3,
                   0,.3, .3,
@@ -72,7 +72,7 @@ test_that("Not specifying proper data inputs throws an error", {
 
 test_that("SIM function returns correct solution with 2 variables", {
 
-  ModelFit2 <- SIM(S = sampleCov2, n = 1000, model = model2, stability = stability2)
+  ModelFit2 <- SIM(S = sampleCov2, n = 1000, model = model2, stability = stability)
   lavaanSolution2 <- t(round(lavaan::inspect(ModelFit2$lavaanObjects[[1]], what = "std")$lambda, 1))
   expect_equal(unclass(lavaanSolution2), BPop2)
 })
@@ -80,7 +80,7 @@ test_that("SIM function returns correct solution with 2 variables", {
 
 test_that("SIM function returns correct solution with 2 variables", {
 
-  ModelFit2 <- SIM(S = sampleCov2, n = 1000, model = model2, stability = stability2)
+  ModelFit2 <- SIM(S = sampleCov2, n = 1000, model = model2, stability = stability)
   lavaanSolution2 <- t(round(lavaan::inspect(ModelFit2$lavaanObjects[[1]], what = "std")$lambda, 1))
   expect_equal(unclass(lavaanSolution2), BPop2)
 })

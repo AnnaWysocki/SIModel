@@ -5,7 +5,7 @@
 \title{Get the model implied symbolic equations for the auto-regressive effects and
 the covariances between the phantom variables}
 \usage{
-GetModelImpEquations(S, blueprint, stability)
+GetModelImpEquations(S, blueprint, stability, residualcov)
 }
 \arguments{
 \item{S}{Sample covariance matrix}
@@ -17,9 +17,13 @@ which effects to constrain to a non-zero value}
 variable in the model. If unnamed SIM will assume the stability
 values are in the same order as the provided data set/
 covariance matrix.}
+
+\item{residualcov}{A list with both the lavaan syntax for the residual covariance
+and a dataframe with the variable names}
 }
 \value{
-A character vector
+A character vector with the model implied equations for the autoregressive
+effects and the phantom covariances.
 }
 \description{
 Get the model implied symbolic equations for the auto-regressive effects and
@@ -36,6 +40,9 @@ rownames(blueprint) <- c("X_0", "Y_0")
 
  stability <- data.frame(X = .3, Y = .3)
 
- GetModelImpEquations(S, blueprint, stability)
+ residualcov <- list(Syntax = 'X ~~ RCovXY * Y',
+                     Variables = data.frame(V1 = "X", V2 = "Y", Name = "RCovXY"))
+
+ GetModelImpEquations(S, blueprint, stability, residualcov)
 
 }

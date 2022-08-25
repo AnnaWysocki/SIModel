@@ -1,38 +1,57 @@
-CreateResultMatrix <- function(modelFit, effects, stability){
+CreateResultMatrix <- function(modelList){
 
-  q <- sum(effects$estimate == "Yes")
+  estimatedEffects <- modelList$CLEffectTable[modelList$CLEffectTable$estimate == "Yes", ]
 
-  ResultMatrix <- as.data.frame(matrix( 0, nrow = 1, ncol = q + length(stability) * 2))
+  ResultMatrix <- as.data.frame(matrix(0,
+                                        nrow = modelList$modelsEstimated,
+                                        ncol = modelList$q + modelList$p * 2))
+  for(i in 1:modelList$modelsEstimated){
 
-  for(i in 1:length(modelFit)){
-
-    stabilityIndex <- stability[i, ]
-
-
-    lavaanLambda <- lavaan::inspect(modelFit[[i]], what = "std")$lambda
-
+    lavaanLambda <- lavaan::inspect(modelList$lavaanObjects[[i]], what = "std")$lambda
     AReffects <- diag(lavaanLambda)
 
-    CLeffects <- rep(0, q)
-    CL_name <- rep(0, q)
+    CLeffects <- CLName <- rep(0, nrow(estimatedEffects))
 
-    for(j in 1:nrow(effects)) {
+    lavaanTable <- lavaan::parameterestimates(modelList$lavaanObjects[[i]])
 
-      if( effects$estimate[j] == "Yes" ){
+    for(j in 1:nrow(estimatedEffects)) {
 
-        lavaanTable <- lavaan::parameterestimates(modelFit[[i]])
-
-        CLeffects[j] <- lavaanTable[which(lavaanTable$label == effects$name[j]), "est"]
-        CL_name[j] <- effects$name[j]
-      }
+        CLeffects[j] <- lavaanTable[which(lavaanTable$label == estimatedEffects$name[j]), "est"]
+        CLName[j] <- estimatedEffects$name[j]
     }
 
-    ResultMatrix[i, ] <- unlist(c(stabilityIndex, AReffects, CLeffects))
-  }
+    if(!is.null(modelList$ResidualCovariance$Syntax)){
 
-  colnames(ResultMatrix) <- c(paste0("Stability", colnames(stability)),
-                              paste0("AR", rownames(lavaanLambda)),
-                              CL_name)
+      Rcov <- RcovName <- length(modelList$ResidualCovariance$Syntax)
+
+      for(j in 1: length(Rcov)) {
+
+      RcovName <- modelList$ResidualCovariance$Variables$name[j]
+      Rcov[j] <- lavaanTable[which(lavaanTable$label == RcovName), "est"]
+
+      }
+
+    ResultMatrix[i, ] <- unlist(c(modelList$stability[i, ], AReffects, CLeffects,
+                                    Rcov))
+
+
+    colnames(ResultMatrix) <- c(paste0("Stability", colnames(modelList$stability)),
+                                paste0("AR", rownames(lavaanLambda)),
+                                CLName,
+                                RcovName)
+
+    }else{
+      ResultMatrix[i, ] <- unlist(c(modelList$stability[i, ], AReffects, CLeffects))
+
+
+      colnames(ResultMatrix) <- c(paste0("Stability", colnames(modelList$stability)),
+                                  paste0("AR", rownames(lavaanLambda)),
+                                  CLName)
+
+
+      }
+
+  }
 
   ResultMatrix <- data.frame(Model = paste0("Model ", 1:nrow(ResultMatrix)), ResultMatrix)
 
