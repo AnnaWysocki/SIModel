@@ -7,13 +7,13 @@
 #'
 
 
-CreateResultMatrix <- function(modelList){
+result.table <- function(modelList){
 
   estimatedEffects <- modelList$CLEffectTable[modelList$CLEffectTable$estimate == "Yes", ]
 
   ResultMatrix <- as.data.frame(matrix(0,
-                                        nrow = modelList$modelsEstimated,
-                                        ncol = modelList$q + modelList$p * 2))
+                                       nrow = modelList$modelsEstimated,
+                                       ncol = modelList$q + modelList$p * 2))
   for(i in 1:modelList$modelsEstimated){
 
     lavaanLambda <- lavaan::inspect(modelList$lavaanObjects[[i]], what = "std")$lambda
@@ -25,8 +25,8 @@ CreateResultMatrix <- function(modelList){
 
     for(j in 1:nrow(estimatedEffects)) {
 
-        CLeffects[j] <- lavaanTable[which(lavaanTable$label == estimatedEffects$name[j]), "est"]
-        CLName[j] <- estimatedEffects$name[j]
+      CLeffects[j] <- lavaanTable[which(lavaanTable$label == estimatedEffects$name[j]), "est"]
+      CLName[j] <- estimatedEffects$name[j]
     }
 
     if(!is.null(modelList$ResidualCovariance$Syntax)){
@@ -35,19 +35,19 @@ CreateResultMatrix <- function(modelList){
 
       for(j in 1: length(Rcov)) {
 
-      RcovName <- modelList$ResidualCovariance$Variables$name[j]
-      Rcov[j] <- lavaanTable[which(lavaanTable$label == RcovName), "est"]
+        RcovName <- modelList$ResidualCovariance$Variables$name[j]
+        Rcov[j] <- lavaanTable[which(lavaanTable$label == RcovName), "est"]
 
       }
 
-    ResultMatrix[i, ] <- unlist(c(modelList$stability[i, ], AReffects, CLeffects,
+      ResultMatrix[i, ] <- unlist(c(modelList$stability[i, ], AReffects, CLeffects,
                                     Rcov))
 
 
-    colnames(ResultMatrix) <- c(paste0("Stability", colnames(modelList$stability)),
-                                paste0("AR", rownames(lavaanLambda)),
-                                CLName,
-                                RcovName)
+      colnames(ResultMatrix) <- c(paste0("Stability", colnames(modelList$stability)),
+                                  paste0("AR", rownames(lavaanLambda)),
+                                  CLName,
+                                  RcovName)
 
     }else{
       ResultMatrix[i, ] <- unlist(c(modelList$stability[i, ], AReffects, CLeffects))
@@ -58,7 +58,7 @@ CreateResultMatrix <- function(modelList){
                                   CLName)
 
 
-      }
+    }
 
   }
 

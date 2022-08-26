@@ -16,9 +16,9 @@
 #' colnames(blueprint) <- c("X", "Y")
 #' rownames(blueprint) <- c("X_0", "Y_0")
 #'
-#' GetLavaanEquations(blueprint, S)
+#' lavaan.equations(blueprint, S)
 #'}
-GetLavaanEquations <- function(blueprint, S){
+lavaan.equations <- function(blueprint, S){
 
   outcomes <- colnames(blueprint)
 

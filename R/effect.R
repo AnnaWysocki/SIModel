@@ -16,10 +16,10 @@
 #' model <- c('Y ~  X
 #'             X ~ .3 * Y')
 #'
-#' CreateEffectTable(model)
+#' effect.table(model)
 
 
-CreateEffectTable <- function(model){
+effect.table <- function(model){
 
   FullEffectTable <- lavaan::lavaanify(model)
   ClEffectTable <- FullEffectTable[FullEffectTable$op ==  "~", ]
@@ -53,7 +53,7 @@ CreateEffectTable <- function(model){
 
 
   ResidualCovariance <- FullEffectTable[FullEffectTable$op == "~~" &
-                                        FullEffectTable$lhs != FullEffectTable$rhs,]
+                                          FullEffectTable$lhs != FullEffectTable$rhs,]
 
   ResidualCovarianceSyntax <- rep(0, nrow(ResidualCovariance))
   ResidualCovarianceDF <- data.frame(V1 = rep(0, nrow(ResidualCovariance)),

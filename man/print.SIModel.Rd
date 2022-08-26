@@ -2,7 +2,7 @@
 % Please edit documentation in R/print.R
 \name{print.SIModel}
 \alias{print.SIModel}
-\title{Title}
+\title{SIModel print function}
 \usage{
 \method{print}{SIModel}(out, digits = 2)
 }
@@ -11,7 +11,10 @@
 
 \item{digits}{Number of digits to round to}
 }
+\value{
+A result table
+}
 \description{
-Title
+SIModel print function
 }
 \keyword{internal}

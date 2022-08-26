@@ -23,7 +23,7 @@
 #' CreateBlueprint(effects, use)
 #'}
 #'
-CreateBlueprint <- function(effects, use){
+blueprint <- function(effects, use){
 
   ################################################
   ##         Create a character matrix          ##

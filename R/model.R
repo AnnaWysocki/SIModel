@@ -29,18 +29,18 @@
 #'  residualcov <- list(Syntax = 'X ~~ RCovXY * Y',
 #'                      Variables = data.frame(V1 = "X", V2 = "Y", Name = "RCovXY"))
 #'
-#'  GetModelImpEquations(S, blueprint, stability, residualcov)
+#'  model.implied.equations(S, blueprint, stability, residualcov)
 #'
-GetModelImpEquations <- function(S, blueprint, stability, residualcov){
+model.implied.equations <- function(S, blueprint, stability, residualcov){
 
-  SymbolicMats <- GetSymbCovMatrix(blueprint, residualcov)
+  SymbolicMats <- symb.matrix(blueprint, residualcov)
 
   SymbolicCovMat <- SymbolicMats$SymbCov
 
   Psi <- Ryacas::ysym(SymbolicMats$Psi)
   B <- Ryacas::ysym(blueprint)
   Cov1 <- Ryacas::ysym(SymbolicCovMat)
-  Cov2 <- SymbMultiplication(t(B), Cov1)
+  Cov2 <- symb.multiplication(t(B), Cov1)
 
 
 
@@ -63,7 +63,7 @@ GetModelImpEquations <- function(S, blueprint, stability, residualcov){
 
   # Covariance Equations
 
-  Cov3 <- SymbMultiplication(Cov2, B) + Psi
+  Cov3 <- symb.multiplication(Cov2, B) + Psi
 
   Covariances <- SymbolicCovMat[upper.tri(SymbolicCovMat)]
 

@@ -20,21 +20,21 @@ bp3 <- matrix(c("ARX", "0", "0", "CLxy", "ARY", "0",
 colnames(bp3) <- c("X", "Y", "Z")
 rownames(bp3) <- c("X_0", "Y_0", "Z_0")
 
-test_that("CreateBlueprint function exports a matrix", {
-  expect_equal(is.matrix(CreateBlueprint(effects = effects1, use = use1)), TRUE)
-  expect_equal(is.matrix(CreateBlueprint(effects = effects3, use = use3)), TRUE)
+test_that("blueprint function exports a matrix", {
+  expect_equal(is.matrix(blueprint(effects = effects1, use = use1)), TRUE)
+  expect_equal(is.matrix(blueprint(effects = effects3, use = use3)), TRUE)
 })
 
-test_that("CreateBlueprint has right number of variables", {
-  expect_equal(ncol(CreateBlueprint(effects = effects1, use = use1)), length(use1))
-  expect_equal(ncol(CreateBlueprint(effects = effects3, use = use3)), length(use3))
+test_that("blueprint has right number of variables", {
+  expect_equal(ncol(blueprint(effects = effects1, use = use1)), length(use1))
+  expect_equal(ncol(blueprint(effects = effects3, use = use3)), length(use3))
 })
 
-test_that("The order of the variables in the input change the CreateBlueprint matrix", {
-  expect_equal(CreateBlueprint(effects = effects1, use = use1), bp1)
-  expect_equal(CreateBlueprint(effects = effects2, use = use2), bp2)
+test_that("The order of the variables in the input change the blueprint matrix", {
+  expect_equal(blueprint(effects = effects1, use = use1), bp1)
+  expect_equal(blueprint(effects = effects2, use = use2), bp2)
 })
 
 test_that("CreateBluerprint function works with 3 variables", {
-  expect_equal(CreateBlueprint(effects = effects3, use = use3), bp3)
+  expect_equal(blueprint(effects = effects3, use = use3), bp3)
 })

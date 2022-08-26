@@ -71,7 +71,7 @@ SIM <- function(data = NULL, S = NULL, n = NULL,
   # Checks for model input
   stopifnot("`model` must be a character element " = is.character(modelList$model))
 
-  modelList <- c(modelList, CreateEffectTable(modelList$model))
+  modelList <- c(modelList, effect.table(modelList$model))
 
   effects <- modelList$CLEffectTable
 
@@ -119,7 +119,7 @@ SIM <- function(data = NULL, S = NULL, n = NULL,
 
   ModelResults <- list()
 
-  modelList$blueprint <- CreateBlueprint(modelList$CLEffectTable, use)
+  modelList$blueprint <- blueprint(modelList$CLEffectTable, use)
 
   modelList$modelWarning <- rep(0, nrow(modelList$stability))
 
@@ -128,12 +128,12 @@ SIM <- function(data = NULL, S = NULL, n = NULL,
   stabilityIndex <- modelList$stability[i, ]
 
   modelList <- c(modelList,
-                   GetModelImpEquations(S = S,
+                 model.implied.equations(S = S,
                                       blueprint = modelList$blueprint,
                                       stability = stabilityIndex,
                                       residualcov = modelList$ResidualCovariance))
 
-  LavaanSyntax <- GetLavaanEquations(blueprint = modelList$blueprint,
+  LavaanSyntax <- lavaan.equations(blueprint = modelList$blueprint,
                                      S = S)
 
   if( !is.null(modelList$ResidualCovariance$Syntax) ){
@@ -154,7 +154,7 @@ SIM <- function(data = NULL, S = NULL, n = NULL,
 
   modelList$lavaanObjects <- ModelResults
 
-  ResultMatrix <- CreateResultMatrix(modelList)
+  ResultMatrix <- result.table(modelList)
 
   out <- list(stability = modelList$stability,
               CLEffectTable = modelList$CLEffectTable,
