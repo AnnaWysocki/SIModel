@@ -64,9 +64,7 @@ SIM <- function(data = NULL, S = NULL, n = NULL,
 
   modelList <- list(model = model,
                     S = S,
-                    n = n,
-                    stability = stability,
-                    modelsEstimated = nrow(stability))
+                    n = n)
 
   # Checks for model input
   stopifnot("`model` must be a character element " = is.character(modelList$model))
@@ -97,7 +95,13 @@ SIM <- function(data = NULL, S = NULL, n = NULL,
     stability <- as.data.frame(stability)
   }
 
-  if(length(stability) != length(use)){
+  if(is.vector(stability)){
+
+    stability <- as.data.frame(t(stability))
+
+  }
+
+  if(ncol(stability) != length(use)){
 
     stop("Provide a stability value for each variable in the model")
 
@@ -112,6 +116,10 @@ SIM <- function(data = NULL, S = NULL, n = NULL,
     stop("The `stability` input names don't match the variable names")
 
   }
+
+  modelList$stability <- stability
+
+  modelList$modelsEstimated <- nrow(stability)
 
   ################################
   ##  Check Degrees of Freedom  ##
