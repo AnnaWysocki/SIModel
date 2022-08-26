@@ -19,7 +19,7 @@ A character vector
 Create lavaan syntax based on the blueprint matrix
 }
 \examples{
-
+\dontrun{
 S <- matrix( c(1, .3, .3, 1), nrow = 2, ncol = 2)
 colnames(S) <- rownames(S) <- c("X", "Y")
 
@@ -28,5 +28,6 @@ colnames(blueprint) <- c("X", "Y")
 rownames(blueprint) <- c("X_0", "Y_0")
 
 GetLavaanEquations(blueprint, S)
-
 }
+}
+\keyword{internal}

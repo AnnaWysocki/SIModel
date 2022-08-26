@@ -14,13 +14,14 @@
 #'                stability-informed model
 #'
 #' @return        A character matrix
-#' @export
+#' @keywords internal
 #'
 #' @examples
+#' \dontrun{
 #' effects <- data.frame(predictor = "X_0", outcome = "Y", name = "CLxy")
 #' use <- c("X", "Y")
 #' CreateBlueprint(effects, use)
-#'
+#'}
 #'
 CreateBlueprint <- function(effects, use){
 

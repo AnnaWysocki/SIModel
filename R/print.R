@@ -1,3 +1,11 @@
+#' SIModel print function
+#'
+#' @param out A SIModel object
+#' @param digits Number of digits to round to
+#'
+#' @return A result table
+#' @keywords internal
+
 print.SIModel <- function(out, digits = 2){
 
 

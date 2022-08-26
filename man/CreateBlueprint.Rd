@@ -30,9 +30,11 @@ Creates a character matrix which specifies which effects to estimate and
 which effects to constrain to a non-zero value
 }
 \examples{
+\dontrun{
 effects <- data.frame(predictor = "X_0", outcome = "Y", name = "CLxy")
 use <- c("X", "Y")
 CreateBlueprint(effects, use)
-
+}
 
 }
+\keyword{internal}

@@ -1,3 +1,12 @@
+#' Creating a Result Table from a SIModel object
+#'
+#' @param modelList A list of SIModel inputs and outputs
+#'
+#' @return A result table
+#' @keywords internal
+#'
+
+
 CreateResultMatrix <- function(modelList){
 
   estimatedEffects <- modelList$CLEffectTable[modelList$CLEffectTable$estimate == "Yes", ]

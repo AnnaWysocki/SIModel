@@ -5,10 +5,10 @@
 #' @param S Sample covariance matrix
 #'
 #' @return A character vector
-#' @export
+#' @keywords internal
 #'
 #' @examples
-#'
+#' \dontrun{
 #' S <- matrix( c(1, .3, .3, 1), nrow = 2, ncol = 2)
 #' colnames(S) <- rownames(S) <- c("X", "Y")
 #'
@@ -17,7 +17,7 @@
 #' rownames(blueprint) <- c("X_0", "Y_0")
 #'
 #' GetLavaanEquations(blueprint, S)
-#'
+#'}
 GetLavaanEquations <- function(blueprint, S){
 
   outcomes <- colnames(blueprint)
