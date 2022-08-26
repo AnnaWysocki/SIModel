@@ -15,7 +15,7 @@ SIM(data = NULL, S = NULL, n = NULL, model, stability)
 
 \item{model}{An object with the cross-sectional model description in lavaan syntax}
 
-\item{stability}{A data frame that contains stability information for each
+\item{stability}{An object that contains stability information for each
 variable in the model. If unnamed SIM will assume the stability
 values are in the same order as the provided data set/
 covariance matrix.}

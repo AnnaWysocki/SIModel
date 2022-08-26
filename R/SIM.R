@@ -4,7 +4,7 @@
 #' @param S A covariance matrix for the measured variables. Not needed if data is provided.
 #' @param n Number of observations. Not needed if data is provided.
 #' @param model An object with the cross-sectional model description in lavaan syntax
-#' @param stability A data frame that contains stability information for each
+#' @param stability An object that contains stability information for each
 #'                  variable in the model. If unnamed SIM will assume the stability
 #'                  values are in the same order as the provided data set/
 #'                  covariance matrix.
@@ -91,12 +91,25 @@ SIM <- function(data = NULL, S = NULL, n = NULL,
 
 
   # Checks for stability input
-  stopifnot("`stability` must be a dataframe " = is.data.frame(stability))
 
-  if( any(is.na(match(colnames(stability), use))) == TRUE ) {
+  if(is.matrix(stability)){
 
-    stop("The stability object does not have a stability value for each
-          variable")
+    stability <- as.data.frame(stability)
+  }
+
+  if(length(stability) != length(use)){
+
+    stop("Provide a stability value for each variable in the model")
+
+  }
+
+  if(is.null(names(stability))){
+    stop("The `stability` input must be named")
+  }
+
+  if( any(is.na(match(names(stability), use))) == TRUE ) {
+
+    stop("The `stability` input names don't match the variable names")
 
   }
 
